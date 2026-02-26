@@ -4,70 +4,72 @@
     <meta charset="UTF-8">
     <title>M31 財務部會議記錄系統</title>
     <style>
-        body { font-family: "Microsoft JhengHei", sans-serif; margin: 20px; background-color: #f0f2f5; color: #333; }
-        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h1 { color: #1a73e8; text-align: center; border-bottom: 3px solid #1a73e8; padding-bottom: 10px; }
-        h2 { font-size: 1.2rem; margin-top: 25px; color: #555; }
+        :root { --m31-blue: #1a73e8; --bg-gray: #f8f9fa; }
+        body { font-family: "Microsoft JhengHei", sans-serif; background-color: var(--bg-gray); padding: 20px; color: #333; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         
-        /* 表單樣式 */
-        .main-info { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; background: #f8f9fa; padding: 15px; border-radius: 8px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
-        input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        
-        /* 追蹤事項動態表格 */
-        .task-table { width: 100%; margin-top: 10px; border-collapse: collapse; }
-        .task-table th, .task-table td { border: 1px solid #ddd; padding: 8px; }
-        .task-table th { background: #e9ecef; font-size: 0.85rem; }
-        
-        .btn-add { background: #28a745; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; margin-top: 10px; }
-        .btn-save { background: #1a73e8; color: white; border: none; padding: 12px 25px; cursor: pointer; border-radius: 6px; width: 100%; font-size: 1rem; margin-top: 20px; }
-        .btn-delete { background: #dc3545; color: white; border: none; padding: 3px 8px; cursor: pointer; border-radius: 4px; }
+        header { text-align: center; border-bottom: 3px solid var(--m31-blue); margin-bottom: 30px; padding-bottom: 10px; }
+        h1 { color: var(--m31-blue); margin: 0; }
 
-        /* 歷史紀錄列表 */
-        .history-list { margin-top: 40px; }
-        .history-item { padding: 12px; border: 1px solid #ddd; margin-bottom: 5px; border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
-        .history-item:hover { background-color: #e8f0fe; border-color: #1a73e8; }
+        /* 表單區域 */
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 25px; background: #f1f3f5; padding: 20px; border-radius: 8px; }
+        label { font-weight: bold; display: block; margin-bottom: 5px; font-size: 0.9rem; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1rem; }
+
+        /* 表格樣式 */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
+        th, td { border: 1px solid #dee2e6; padding: 12px; text-align: left; }
+        th { background: #e9ecef; color: #495057; }
         
-        /* 彈出視窗 (Modal) */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 25px; border-radius: 10px; width: 80%; max-width: 800px; max-height: 80vh; overflow-y: auto; }
-        .close-modal { float: right; cursor: pointer; font-size: 1.5rem; font-weight: bold; }
+        /* 按鈕樣式 */
+        .btn-add { background: #28a745; color: white; border: none; padding: 8px 16px; cursor: pointer; border-radius: 4px; margin-top: 10px; }
+        .btn-save { background: var(--m31-blue); color: white; border: none; padding: 15px; width: 100%; cursor: pointer; border-radius: 6px; margin-top: 25px; font-size: 1.1rem; font-weight: bold; }
+        .btn-save:hover { background: #1557b0; }
+        .btn-del { background: #dc3545; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
+
+        /* 歷史清單 */
+        .history-item { 
+            padding: 15px; border: 1px solid #ddd; margin-top: 10px; border-radius: 8px; 
+            cursor: pointer; background: #fff; display: flex; justify-content: space-between; align-items: center; transition: 0.2s;
+        }
+        .history-item:hover { background: #e8f0fe; border-color: var(--m31-blue); }
+
+        /* 彈出視窗 */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: white; padding: 30px; border-radius: 12px; width: 85%; max-width: 800px; max-height: 85vh; overflow-y: auto; position: relative; }
+        .close { position: absolute; right: 20px; top: 15px; cursor: pointer; font-size: 28px; color: #aaa; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>M31 財務部會議記錄</h1>
+    <header><h1>M31 財務部會議記錄</h1></header>
 
     <section>
-        <h2>新增會議</h2>
-        <div class="main-info">
+        <div class="info-grid">
             <div>
                 <label>會議主題</label>
-                <input type="text" id="title" placeholder="請輸入主題">
+                <select id="meetingTitle">
+                    <option value="部門週會">部門週會</option>
+                    <option value="部門月會">部門月會</option>
+                </select>
             </div>
-            <div>
-                <label>會議日期</label>
-                <input type="date" id="meetingDate">
-            </div>
-            <div>
-                <label>會議記錄人</label>
-                <input type="text" id="recorder" placeholder="填寫姓名">
-            </div>
+            <div><label>會議日期</label><input type="date" id="meetingDate"></div>
+            <div><label>會議記錄人</label><input type="text" id="recorder" placeholder="請填寫姓名"></div>
         </div>
 
         <h3>追蹤事項 (Follow-up)</h3>
-        <table class="task-table">
+        <table id="taskInputTable">
             <thead>
                 <tr>
-                    <th width="5%">#</th>
-                    <th width="50%">追蹤事項內容</th>
+                    <th width="8%">編號</th>
+                    <th width="47%">追蹤事項</th>
                     <th width="20%">項目負責人</th>
                     <th width="20%">完成日</th>
-                    <th width="5%">刪</th>
+                    <th width="5%"></th>
                 </tr>
             </thead>
-            <tbody id="taskInputBody">
+            <tbody id="taskBody">
                 <tr>
                     <td>1</td>
                     <td><input type="text" class="t-desc"></td>
@@ -77,70 +79,61 @@
                 </tr>
             </tbody>
         </table>
-        <button class="btn-add" onclick="addTaskRow()">+ 新增事項</button>
+        <button class="btn-add" onclick="addRow()">+ 新增項目</button>
         <button class="btn-save" onclick="saveMeeting()">儲存本次會議紀錄</button>
     </section>
 
-    <section class="history-list">
-        <h2>歷史會議紀錄 (點擊日期查看詳情)</h2>
-        <div id="historyContainer">
-            </div>
+    <hr style="margin: 40px 0; border: 0; border-top: 1px solid #ddd;">
+
+    <section>
+        <h2 style="color: #555;">歷史紀錄追蹤 (點擊查看詳情)</h2>
+        <div id="historyList"></div>
     </section>
 </div>
 
 <div id="detailModal" class="modal">
     <div class="modal-content">
-        <span class="close-modal" onclick="closeModal()">&times;</span>
-        <h2 id="viewTitle" style="color:#1a73e8; margin-top:0;"></h2>
-        <p id="viewMeta" style="color:#666;"></p>
-        <table class="task-table">
-            <thead>
-                <tr>
-                    <th>編號</th>
-                    <th>追蹤事項</th>
-                    <th>負責人</th>
-                    <th>完成日</th>
-                </tr>
-            </thead>
-            <tbody id="viewTaskBody"></tbody>
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 id="viewTitle" style="color: var(--m31-blue); margin-top: 0;"></h2>
+        <p id="viewMeta" style="color: #666; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 10px;"></p>
+        <table>
+            <thead><tr><th>編號</th><th>追蹤事項</th><th>負責人</th><th>完成日</th></tr></thead>
+            <tbody id="viewBody"></tbody>
         </table>
-        <button class="btn-delete" style="margin-top:20px;" id="deleteCurrentBtn">刪除此會議紀錄</button>
+        <div style="text-align: right; margin-top: 25px;">
+            <button class="btn-del" onclick="deleteEntry()">刪除此紀錄</button>
+        </div>
     </div>
 </div>
 
 <script>
-    let currentTaskCount = 1;
+    let activeId = null;
+    document.getElementById('meetingDate').valueAsDate = new Date();
 
-    // 新增一列追蹤事項
-    function addTaskRow() {
-        currentTaskCount++;
-        const tbody = document.getElementById('taskInputBody');
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${currentTaskCount}</td>
-            <td><input type="text" class="t-desc"></td>
-            <td><input type="text" class="t-owner"></td>
-            <td><input type="date" class="t-done"></td>
-            <td><button class="btn-delete" onclick="this.parentElement.parentElement.remove()">X</button></td>
-        `;
-        tbody.appendChild(row);
+    function addRow() {
+        const body = document.getElementById('taskBody');
+        const row = body.insertRow();
+        const num = body.rows.length;
+        row.innerHTML = `<td>${num}</td><td><input type="text" class="t-desc"></td><td><input type="text" class="t-owner"></td><td><input type="date" class="t-done"></td><td><button class="btn-del" onclick="this.parentElement.parentElement.remove(); reNumber();">✕</button></td>`;
     }
 
-    // 儲存邏輯
+    function reNumber() {
+        document.querySelectorAll('#taskBody tr').forEach((r, i) => r.cells[0].innerText = i + 1);
+    }
+
     function saveMeeting() {
-        const title = document.getElementById('title').value;
+        const title = document.getElementById('meetingTitle').value;
         const date = document.getElementById('meetingDate').value;
         const recorder = document.getElementById('recorder').value;
 
-        if (!title || !date) return alert("請填寫主題與日期！");
+        if(!date || !recorder) return alert("請填寫日期與會議記錄人！");
 
-        const taskRows = document.querySelectorAll('#taskInputBody tr');
         const tasks = [];
-        taskRows.forEach((row, idx) => {
+        document.querySelectorAll('#taskBody tr').forEach((row, i) => {
             const desc = row.querySelector('.t-desc').value;
-            if (desc) {
+            if(desc) {
                 tasks.push({
-                    id: idx + 1,
+                    num: i + 1,
                     desc: desc,
                     owner: row.querySelector('.t-owner').value,
                     done: row.querySelector('.t-done').value
@@ -148,70 +141,58 @@
             }
         });
 
-        const meetingData = { id: Date.now(), title, date, recorder, tasks };
-        let history = JSON.parse(localStorage.getItem('m31_meetings')) || [];
-        history.push(meetingData);
-        localStorage.setItem('m31_meetings', JSON.stringify(history));
+        if(tasks.length === 0) return alert("請填寫至少一項追蹤事項！");
 
-        location.reload(); // 簡單重整更新列表
+        const record = { id: Date.now(), title, date, recorder, tasks };
+        let history = JSON.parse(localStorage.getItem('m31_meeting_logs') || '[]');
+        history.push(record);
+        localStorage.setItem('m31_meeting_logs', JSON.stringify(history));
+        
+        alert("紀錄已儲存！");
+        location.reload();
     }
 
-    // 顯示歷史列表
     function loadHistory() {
-        const history = JSON.parse(localStorage.getItem('m31_meetings')) || [];
-        const container = document.getElementById('historyContainer');
-        container.innerHTML = history.length ? '' : '<p style="color:#999;">尚無歷史紀錄。</p>';
-
-        // 依日期降冪排序
+        const history = JSON.parse(localStorage.getItem('m31_meeting_logs') || '[]');
         history.sort((a, b) => new Date(b.date) - new Date(a.date));
+        const list = document.getElementById('historyList');
+        
+        if(history.length === 0) {
+            list.innerHTML = '<p style="text-align:center; color:#999;">目前尚無紀錄</p>';
+            return;
+        }
 
-        history.forEach(m => {
-            const item = document.createElement('div');
-            item.className = 'history-item';
-            item.innerHTML = `
+        list.innerHTML = history.map(m => `
+            <div class="history-item" onclick="openDetail(${m.id})">
                 <span><strong>📅 ${m.date}</strong> — ${m.title}</span>
-                <small>記錄人: ${m.recorder}</small>
-            `;
-            item.onclick = () => showDetail(m.id);
-            container.appendChild(item);
-        });
+                <span style="color:#666;">記錄人: ${m.recorder} ❯</span>
+            </div>
+        `).join('');
     }
 
-    // 顯示單一會議詳情
-    function showDetail(id) {
-        const history = JSON.parse(localStorage.getItem('m31_meetings'));
-        const m = history.find(item => item.id === id);
-        
-        document.getElementById('viewTitle').innerText = m.title;
-        document.getElementById('viewMeta').innerText = `日期：${m.date} | 記錄人：${m.recorder}`;
-        
-        const vBody = document.getElementById('viewTaskBody');
-        vBody.innerHTML = m.tasks.map(t => `
-            <tr>
-                <td>${t.id}</td>
-                <td>${t.desc}</td>
-                <td>${t.owner}</td>
-                <td>${t.done}</td>
-            </tr>
+    function openDetail(id) {
+        activeId = id;
+        const data = JSON.parse(localStorage.getItem('m31_meeting_logs')).find(x => x.id === id);
+        document.getElementById('viewTitle').innerText = data.title;
+        document.getElementById('viewMeta').innerText = `日期：${data.date} | 會議記錄人：${data.recorder}`;
+        document.getElementById('viewBody').innerHTML = data.tasks.map(t => `
+            <tr><td>${t.num}</td><td>${t.desc}</td><td>${t.owner || '-'}</td><td>${t.done || '-'}</td></tr>
         `).join('');
-
-        document.getElementById('deleteCurrentBtn').onclick = () => deleteMeeting(id);
         document.getElementById('detailModal').style.display = 'flex';
     }
 
-    function closeModal() {
-        document.getElementById('detailModal').style.display = 'none';
-    }
+    function closeModal() { document.getElementById('detailModal').style.display = 'none'; }
 
-    function deleteMeeting(id) {
-        if (confirm("確定刪除此紀錄？")) {
-            let history = JSON.parse(localStorage.getItem('m31_meetings'));
-            history = history.filter(m => m.id !== id);
-            localStorage.setItem('m31_meetings', JSON.stringify(history));
+    function deleteEntry() {
+        if(confirm("確定要刪除這筆紀錄嗎？")) {
+            let history = JSON.parse(localStorage.getItem('m31_meeting_logs'));
+            history = history.filter(x => x.id !== activeId);
+            localStorage.setItem('m31_meeting_logs', JSON.stringify(history));
             location.reload();
         }
     }
 
+    window.onclick = (e) => { if (e.target.className === 'modal') closeModal(); };
     window.onload = loadHistory;
 </script>
 
